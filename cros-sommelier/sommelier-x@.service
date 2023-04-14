@@ -32,6 +32,7 @@ ExecStart=/usr/bin/sommelier \
               --x-display=%i \
               --sd-notify="READY=1" \
               --no-exit-with-child \
+              --separate-outputs \
               --x-auth=${HOME}/.Xauthority \
               /bin/sh -c \
                   "systemctl --user set-environment ${DISPLAY_VAR}=$${DISPLAY}; \

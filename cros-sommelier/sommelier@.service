@@ -15,6 +15,7 @@ ExecStartPre=/bin/sh -c \
 ExecStart=/usr/bin/sommelier \
               --parent \
               --sd-notify="READY=1" \
+              --separate-outputs \
               --socket=wayland-%i \
               /bin/sh -c \
                   "systemctl --user set-environment ${WAYLAND_DISPLAY_VAR}=$${WAYLAND_DISPLAY}; \
