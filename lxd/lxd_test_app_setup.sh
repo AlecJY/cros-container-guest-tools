@@ -12,8 +12,8 @@ set -eux -o pipefail
 # container installed, and look at the latest version.
 # Note that updating this package is likely to break screendiffs.
 # Releases for different architectures have different build numbers.
-VSCODE_VERSION_AMD64="1.63.0-1638855526"
-VSCODE_VERSION_ARM64="1.63.0-1638854446"
+VSCODE_VERSION_AMD64="1.77.3-1681292746"
+VSCODE_VERSION_ARM64="1.77.3-1681295476"
 
 main() {
     local arch=$1
