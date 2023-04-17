@@ -137,6 +137,7 @@ build_and_export() {
     serial="$(date --utc +%Y%m%d_%H:%M)"
 
     "${DISTROBUILDER}" pack-lxd "${src_root}/lxd/debian.yaml" "${rootfs}" \
+        -o "packages.update=false" \
         -o "image.architecture=${arch}" \
         -o "image.release=${release}" \
         -o "image.serial=${serial}" \
