@@ -5,7 +5,7 @@
 
 set -ex -o pipefail
 
-DISTROBUILDER="/usr/local/bin/distrobuilder"
+DISTROBUILDER="${DISTROBUILDER:-/usr/local/bin/distrobuilder}"
 
 cleanup() {
     local tempdir="$1"
