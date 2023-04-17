@@ -65,6 +65,13 @@ main() {
         rm /etc/apt/sources.list.d/cros-mesa.list
         apt-get -o Acquire::Retries=3 update
     fi
+
+    # Disable automatic updates for test images.
+    systemctl disable apt-daily.timer apt-daily-upgrade.timer
+    sed -i -E \
+      -e 's/(DisableAutomaticCrosPackageUpdates=)false/\1true/' \
+      -e 's/(DisableAutomaticSecurityUpdates=)false/\1true/' \
+      /etc/skel/.config/cros-garcon.conf
 }
 
 main "$@"
