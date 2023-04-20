@@ -95,8 +95,8 @@ build_cros_im() {
         "${KOKORO_GFILE_DIR}"/qemu-user-static_ubuntu6.2_amd64.deb \
         binfmt-support
 
-    # pbuilder is not installed yet, so create both directories.
-    sudo mkdir /tmpfs/pbuilder /var/cache/pbuilder
+    # pbuilder may not be installed yet, so create both directories.
+    sudo mkdir -p /tmpfs/pbuilder /var/cache/pbuilder
     sudo mount --bind /tmpfs/pbuilder /var/cache/pbuilder
 
     # This job builds multiple architectures of bullseye. Download caches for
