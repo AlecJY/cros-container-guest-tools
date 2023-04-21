@@ -12,17 +12,6 @@ build_guest_tools() {
 
     cd "${src_root}"
 
-    curl -sSL https://bazel.build/bazel-release.pub.gpg \
-        | gpg --dearmor \
-        | sudo tee /etc/apt/trusted.gpg.d/bazel.gpg > /dev/null
-
-    sudo tee /etc/apt/sources.list.d/bazel.list > /dev/null << EOF
-deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/bazel.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8
-EOF
-    sudo apt-get -q update
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y install \
-        bazel-5.3.0 python-is-python3
-
     # Build all targets.
     bazel-5.3.0 build //cros-debs:debs
 
@@ -45,16 +34,9 @@ build_mesa_shard() {
     local buildresult="${KOKORO_ARTIFACTS_DIR}/${dist}_mesa_debs"
     mkdir -p "${buildresult}"
 
-    local -a build_deps
-    build_deps=( debhelper debian-archive-keyring pbuilder quilt )
-    sudo apt-get -q update
-
     if [[ "${arch}" = "arm"* && "$(uname -m)" != "aarch64" ]]; then
-         build_deps+=(
-            "${KOKORO_GFILE_DIR}/qemu-user-static_ubuntu6.2_amd64.deb"
-        )
+         sudo dpkg -i "${KOKORO_GFILE_DIR}/qemu-user-static_ubuntu6.2_amd64.deb"
     fi
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y install "${build_deps[@]}"
 
     sudo mkdir /tmpfs/pbuilder
     sudo mount --bind /tmpfs/pbuilder /var/cache/pbuilder
@@ -90,10 +72,7 @@ build_cros_im() {
 
     # Use qemu-user-static 1:6.2 since the version in Ubuntu 20.04 has a bug
     # that has not yet been patched (b/244998899).
-    sudo apt-get update
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        "${KOKORO_GFILE_DIR}"/qemu-user-static_ubuntu6.2_amd64.deb \
-        binfmt-support
+    sudo dpkg -i "${KOKORO_GFILE_DIR}"/qemu-user-static_ubuntu6.2_amd64.deb
 
     # pbuilder may not be installed yet, so create both directories.
     sudo mkdir -p /tmpfs/pbuilder /var/cache/pbuilder

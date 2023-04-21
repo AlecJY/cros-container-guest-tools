@@ -12,9 +12,6 @@ main() {
     require_kokoro_artifacts
     stop_apt_daily
 
-    sudo apt-get -q update
-    sudo apt-get -q -y install reprepro
-
     local src_root="${KOKORO_ARTIFACTS_DIR}/git/cros-container-guest-tools"
     local repo_dir="${src_root}"/apt_unsigned
     mkdir -p "${repo_dir}"/{,conf}

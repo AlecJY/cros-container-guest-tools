@@ -21,21 +21,6 @@ get_release() {
 }
 
 install_deps() {
-    sudo apt-get -q update
-
-    local -a build_dependencies
-    build_dependencies=( debootstrap golang-go )
-
-    # qemu setup.
-    if [[ "$(get_arch)" == "arm64" ]]; then
-        build_dependencies+=( binfmt-support qemu-user-static )
-    elif [[ "$(get_arch)" == "amd64" ]]; then
-        build_dependencies+=( python3-venv )
-    fi
-
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -q -y install \
-        "${build_dependencies[@]}"
-
     GOPATH="$(go env GOPATH)"
     pushd /tmp
     curl "https://linuxcontainers.org/downloads/distrobuilder/${DISTROBUILDER_ARCHIVE}" -O
