@@ -7,6 +7,7 @@
 """Converts a Chromium OS GPT disk image into a single rootfs/kernel"""
 
 import argparse
+import gzip
 import os
 import shutil
 import struct
@@ -157,7 +158,14 @@ def repack_rootfs(output_dir, disk_path):
     # Copy lsb-release and credits into place.
     shutil.copy(str(rootfs_dir / 'etc' / 'lsb-release'), str(output_dir))
     credits_path = rootfs_dir / 'opt/google/chrome/resources/about_os_credits.html'
-    shutil.copy(str(credits_path), str(output_dir))
+    try:
+      shutil.copy(str(credits_path), str(output_dir))
+    except FileNotFoundError:
+      # This is DLC, so we're not as concerned about size. Leave the credits
+      # file uncompressed for easier handling.
+      with gzip.open(str(credits_path) + '.gz', 'rb') as decompressed:
+        with open(str(credits_path), 'wb') as out:
+          shutil.copyfileobj(decompressed, out)
 
     dedupe_hardlinks(rootfs_dir)
 
