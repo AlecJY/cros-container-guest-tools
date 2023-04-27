@@ -31,7 +31,7 @@ main() {
 
   local dir
   for dir in images streams; do
-    gsutil.py -- -h "Cache-Control:public,max-age=30" \
+    gsutil -h "Cache-Control:public,max-age=30" \
       -m rsync \
       -r \
       "${src_url}/${dir}/" "${target_url}/${dir}/"
