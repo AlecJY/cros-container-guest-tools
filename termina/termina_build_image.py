@@ -163,8 +163,9 @@ def repack_rootfs(output_dir, disk_path):
     except FileNotFoundError:
       # This is DLC, so we're not as concerned about size. Leave the credits
       # file uncompressed for easier handling.
-      with gzip.open(str(credits_path) + '.gz', 'rb') as decompressed:
-        with open(str(credits_path), 'wb') as out:
+      with gzip.open(credits_path.with_suffix('.html.gz'),
+                     'rb') as decompressed:
+        with credits_path.open('wb') as out:
           shutil.copyfileobj(decompressed, out)
 
     dedupe_hardlinks(rootfs_dir)
