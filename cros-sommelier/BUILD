@@ -73,7 +73,6 @@ pkg_deb(
     conffiles_file = "conffiles",
     data = ":debian-data",
     depends = [
-        "libgtk2.0-0",
         "libpam-systemd",
         "x11-utils",
     ],
@@ -88,6 +87,6 @@ pkg_deb(
         "xkb-data",
     ],
     section = "misc",
-    version = "0.32",
+    version = "0.33",
     visibility = ["//cros-debs:__pkg__"],
 )
