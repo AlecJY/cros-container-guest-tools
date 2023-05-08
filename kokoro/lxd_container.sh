@@ -45,6 +45,7 @@ setup_test_venv() {
 }
 
 do_preseed() {
+    sudo mkdir /tmpfs/lxd
     sudo /snap/bin/lxd waitready
     cat <<EOF | sudo /snap/bin/lxd init --preseed
 # Storage pools
@@ -52,7 +53,7 @@ storage_pools:
 - name: default
   driver: dir
   config:
-    source: /var/snap/lxd/common/lxd/storage-pools/default
+    source: /tmpfs/lxd
 
 # Network
 # IPv4 address is configured by the host.
@@ -103,11 +104,8 @@ main() {
     release="$(get_release)"
     test_venv="${TMPDIR:-/tmp}/testenv"
 
-    # Container tests only run on x86
-    if [[ "${arch}" == "amd64" ]]; then
-        do_preseed
-        setup_test_venv "${src_root}" "${test_venv}"
-    fi
+    do_preseed
+    setup_test_venv "${src_root}" "${test_venv}"
 
     local cache_url="gs://pbuilder-apt-cache/debian-${release}-${arch}"
     local cache_dir="/tmpfs/debian-${release}-${arch}"
