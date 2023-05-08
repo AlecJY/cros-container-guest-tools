@@ -85,8 +85,9 @@ pkg_deb(
         "xauth",
         "xfonts-base",
         "xkb-data",
+        "xxd",
     ],
     section = "misc",
-    version = "0.33",
+    version = "0.34",
     visibility = ["//cros-debs:__pkg__"],
 )
