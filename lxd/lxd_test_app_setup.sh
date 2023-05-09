@@ -53,7 +53,7 @@ EOF
     fi
 
     apt-get -o Acquire::Retries=3 -q update
-    apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
+    eatmydata apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
 }
 
 main "$@"

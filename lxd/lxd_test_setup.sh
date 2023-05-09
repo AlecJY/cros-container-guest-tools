@@ -58,7 +58,8 @@ main() {
       | debconf-set-selections
 
     apt-get -o Acquire::Retries=3 update
-    apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
+    apt-get -o Acquire::Retries=3 -q -y install eatmydata
+    eatmydata apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
 
     if [ "${release}" = "buster" ]; then
         apt-get clean

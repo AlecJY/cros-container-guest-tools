@@ -121,7 +121,7 @@ exec /usr/sbin/debootstrap --cache-dir "${cache_dir}" "\$@"
 EOF
     sudo chmod 0755 /tmpfs/bin/debootstrap
 
-    sudo PATH="/tmpfs/bin:${PATH}" \
+    sudo PATH="/tmpfs/bin:${PATH}" TMPDIR="/tmpfs" \
         "${src_root}/lxd/build_debian_container.sh" "${src_root}" \
         "${result_dir}" "${apt_dir}" "${arch}" "${release}" "${test_venv}"
     sudo gsutil -m -q rsync "${cache_dir}" "${cache_url}"

@@ -90,26 +90,26 @@ build_and_export() {
     mkdir "${rootfs}/run/apt"
     cp -r "${apt_dir}"/* "${rootfs}/run/apt"
 
-    if [ "${image_type}" = "prod" ]; then
-        local setup_script="${src_root}"/lxd/lxd_setup.sh
-        cp "${setup_script}" "${rootfs}/run/"
-        chroot "${rootfs}" /run/"$(basename ${setup_script})" \
-            "${release}"
-    fi
+    local setup_script
+    case "${image_type}" in
+        "prod")
+            setup_script="${src_root}/lxd/lxd_setup.sh"
+            ;;
+        "test")
+            setup_script="${src_root}/lxd/lxd_test_setup.sh"
+            ;;
+        "app_test")
+            setup_script="${src_root}/lxd/lxd_test_app_setup.sh"
+            ;;
+        *)
+            echo "Unknown image type ${image_type}"
+            return 1
+            ;;
+    esac
+    cp "${setup_script}" "${rootfs}/run/"
+    chroot "${rootfs}" /usr/bin/env -i /run/"$(basename "${setup_script}")" \
+        "${release}"
 
-    if [ "${image_type}" = "test" ]; then
-        local setup_test_script="${src_root}"/lxd/lxd_test_setup.sh
-        cp "${setup_test_script}" "${rootfs}/run/"
-        chroot "${rootfs}" /run/"$(basename ${setup_test_script})" \
-            "${release}"
-    fi
-
-    if [ "${image_type}" = "app_test" ]; then
-        local setup_test_app_script="${src_root}"/lxd/lxd_test_app_setup.sh
-        cp "${setup_test_app_script}" "${rootfs}/run/"
-        chroot "${rootfs}" /run/"$(basename ${setup_test_app_script})" \
-            "${arch}"
-    fi
 
     unmount_all "${rootfs}"
     rm -rf "${rootfs}/opt/google"
