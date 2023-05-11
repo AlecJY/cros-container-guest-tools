@@ -27,6 +27,10 @@ class LxdTestCase(unittest.TestCase):
   CONTAINER_NAME = 'lxd-test'
   TEST_PROFILE = 'test-profile'
   TEST_USER = 'testuser'
+  TEST_USER_GROUPS = (
+      'audio', 'cdrom', 'dialout', 'floppy', 'plugdev', 'sudo', 'users',
+      'video'
+  )
 
   @classmethod
   def setUpClass(cls):
@@ -114,25 +118,24 @@ class LxdTestCase(unittest.TestCase):
 
   def test_user_services_no_gpu(self):
     self.container.start(wait=True)
-    time.sleep(10)
+    # The first command we send after the container boots can execute before
+    # systemd is ready. A wait of 1 second should be plenty to avoid this.
+    time.sleep(1)
     self.assertEqual(self.container.status_code, RUNNING)
-    ret, _, _ = self.container.execute(
-        ['useradd', '-u', '1000', '-s', '/bin/bash', '-m', self.TEST_USER])
+
+    ret, _, _ = self.container.execute([
+        'useradd', '-u', '1000', '-G', ','.join(self.TEST_USER_GROUPS), '-s',
+        '/bin/bash', '-m', self.TEST_USER
+    ])
     self.assertEqual(ret, 0)
 
-    groups = [
-        'audio', 'cdrom', 'dialout', 'floppy', 'plugdev', 'sudo', 'users',
-        'video'
-    ]
-    for group in groups:
-      ret, _, _ = self.container.execute(
-          ['usermod', '-aG', group, self.TEST_USER])
-      self.assertEqual(ret, 0)
-
-    ret, _, _ = self.container.execute(
-        ['loginctl', 'enable-linger', self.TEST_USER])
+    # Execute user commands with su, rather than directly as the user. This
+    # ensures systemd is available (through PAM). However, the services may not
+    # have started up yet, so also wait for the user session boot to complete.
+    ret, _, _ = self.container.execute([
+        'su', '-c' 'systemctl --user --wait is-system-running', self.TEST_USER,
+    ])
     self.assertEqual(ret, 0)
-    time.sleep(10)
 
     ret, _, _ = self.container.execute([
         'su', '-c', 'systemctl --user is-active cros-garcon.service',
@@ -174,25 +177,24 @@ class LxdTestCase(unittest.TestCase):
         },
     })
     self.container.save()
-    time.sleep(10)
+    # The first command we send after the container boots can execute before
+    # systemd is ready. A wait of 1 second should be plenty to avoid this.
+    time.sleep(1)
     self.assertEqual(self.container.status_code, RUNNING)
-    ret, _, _ = self.container.execute(
-        ['useradd', '-u', '1000', '-s', '/bin/bash', '-m', self.TEST_USER])
+
+    ret, _, _ = self.container.execute([
+        'useradd', '-u', '1000', '-G', ','.join(self.TEST_USER_GROUPS), '-s',
+        '/bin/bash', '-m', self.TEST_USER
+    ])
     self.assertEqual(ret, 0)
 
-    groups = [
-        'audio', 'cdrom', 'dialout', 'floppy', 'plugdev', 'sudo', 'users',
-        'video'
-    ]
-    for group in groups:
-      ret, _, _ = self.container.execute(
-          ['usermod', '-aG', group, self.TEST_USER])
-      self.assertEqual(ret, 0)
-
-    ret, _, _ = self.container.execute(
-        ['loginctl', 'enable-linger', self.TEST_USER])
+    # Execute user commands with su, rather than directly as the user. This
+    # ensures systemd is available (through PAM). However, the services may not
+    # have started up yet, so also wait for the user session boot to complete.
+    ret, _, _ = self.container.execute([
+        'su', '-c' 'systemctl --user --wait is-system-running', self.TEST_USER,
+    ])
     self.assertEqual(ret, 0)
-    time.sleep(10)
 
     ret, _, _ = self.container.execute([
         'su', '-c', 'systemctl --user is-active cros-garcon.service',
