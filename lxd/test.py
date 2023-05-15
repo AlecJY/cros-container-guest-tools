@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Copyright 2018 The ChromiumOS Authors
+# Copyright 2023 The ChromiumOS Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """LXD container integration tests."""
 
-from __future__ import print_function
-
-import argparse
 import os
 import pylxd
 import sys
@@ -54,7 +50,6 @@ class LxdTestCase(unittest.TestCase):
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     lddtree_dir = os.path.join(script_dir, 'mocks', 'lddtree')
-    sshd_dir = os.path.join(script_dir, 'mocks', 'sshd_config')
 
     cls.profile = cls.client.profiles.create(
         cls.TEST_PROFILE,
@@ -76,11 +71,6 @@ class LxdTestCase(unittest.TestCase):
             'cros_containers': {
                 'source': lddtree_dir,
                 'path': '/opt/google/cros-containers',
-                'type': 'disk',
-            },
-            'sshd_config': {
-                'source': sshd_dir,
-                'path': '/dev/.ssh',
                 'type': 'disk',
             },
         })
