@@ -31,7 +31,7 @@ RECOMMENDS = [
     "dbus-user-session",
     "dbus-x11",
     "file",
-    "fuse",
+    "fuse3",
     "git",
     "gnupg",
     "iputils-ping",
@@ -62,7 +62,7 @@ pkg_deb(
         "cros-im",
     ],
     section = "misc",
-    version = "0.37",
+    version = "0.38",
     visibility = ["//cros-debs:__pkg__"],
 )
 
@@ -79,7 +79,7 @@ pkg_deb(
     section = "misc",
     # To maintain a clean upgrade path, the version should sort before the
     # :deb-bookworm versions.
-    version = "0.37~cros11",
+    version = "0.38~cros11",
     visibility = ["//cros-debs:__pkg__"],
 )
 
@@ -96,6 +96,6 @@ pkg_deb(
     section = "misc",
     # To maintain a clean upgrade path, the version should sort before the
     # :deb-bookworm and :deb-bullseye versions.
-    version = "0.37~cros10",
+    version = "0.38~cros10",
     visibility = ["//cros-debs:__pkg__"],
 )
