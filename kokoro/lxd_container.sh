@@ -110,7 +110,7 @@ main() {
     local cache_url="gs://pbuilder-apt-cache/debian-${release}-${arch}"
     local cache_dir="/tmpfs/debian-${release}-${arch}"
     sudo mkdir -p "${cache_dir}"
-    sudo gsutil -m -q rsync "${cache_url}" "${cache_dir}"
+    sudo gsutil -m -q rsync "${cache_url}" "${cache_dir}" || true
 
     # Install a wrapper for debootstrap, since distrobuilder doesn't support
     # specifying a cache directory.
