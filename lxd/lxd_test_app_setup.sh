@@ -25,6 +25,8 @@ main() {
         emacs
         firefox-esr
         gedit
+        libreoffice
+        libreoffice-gtk3
     )
 
     # for testing Visual Studio Code.
