@@ -41,6 +41,10 @@ main() {
         samba
         # For crostini.Notify
         libnotify-bin
+        # For intel.CrostiniLinuxTerminalFunctionality
+        cpu-checker
+        # For network.DNSProxy*
+        dnsutils
     )
 
     # For graphics.GLBench
@@ -62,9 +66,7 @@ main() {
     eatmydata apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
 
     if [ "${release}" = "buster" ]; then
-        apt-get clean
         rm /etc/apt/sources.list.d/cros-mesa.list
-        apt-get -o Acquire::Retries=3 update
     fi
 
     # Disable automatic updates for test images.
@@ -73,6 +75,9 @@ main() {
       -e 's/(DisableAutomaticCrosPackageUpdates=)false/\1true/' \
       -e 's/(DisableAutomaticSecurityUpdates=)false/\1true/' \
       /etc/skel/.config/cros-garcon.conf
+
+    apt-get clean
+    rm -rf /var/lib/apt/lists
 }
 
 main "$@"

@@ -16,6 +16,7 @@ VSCODE_VERSION_AMD64="1.77.3-1681292746"
 VSCODE_VERSION_ARM64="1.77.3-1681295476"
 
 main() {
+    local release=$1
     local arch=$2
     export DEBIAN_FRONTEND=noninteractive
 
@@ -27,7 +28,13 @@ main() {
         gedit
         libreoffice
         libreoffice-gtk3
+        docker.io
     )
+
+    # Podman is not available in buster.
+    if [[ "${release}" != "buster" ]]; then
+      packages+=(podman)
+    fi
 
     # for testing Visual Studio Code.
     curl -sSL https://packages.microsoft.com/keys/microsoft.asc \
@@ -56,6 +63,9 @@ EOF
 
     apt-get -o Acquire::Retries=3 -q update
     eatmydata apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
+
+    apt-get clean
+    rm -rf /var/lib/apt/lists
 }
 
 main "$@"
