@@ -16,7 +16,7 @@ VSCODE_VERSION_AMD64="1.77.3-1681292746"
 VSCODE_VERSION_ARM64="1.77.3-1681295476"
 
 main() {
-    local arch=$1
+    local arch=$2
     export DEBIAN_FRONTEND=noninteractive
 
     local -a packages

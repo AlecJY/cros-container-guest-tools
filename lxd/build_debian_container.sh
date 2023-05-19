@@ -108,7 +108,7 @@ build_and_export() {
     esac
     cp "${setup_script}" "${rootfs}/run/"
     chroot "${rootfs}" /usr/bin/env -i /run/"$(basename "${setup_script}")" \
-        "${release}"
+        "${release}" "${arch}"
 
 
     unmount_all "${rootfs}"
