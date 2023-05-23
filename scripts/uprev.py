@@ -25,6 +25,7 @@ def update_data_file(url, filepath, size, sha256sum):
     print(f'Updated {os.path.basename(filepath)}')
     with open(filepath, 'w') as f:
         json.dump(result, f, indent=4, sort_keys=True)
+        f.write('\n')
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
