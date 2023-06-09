@@ -31,9 +31,16 @@ main() {
         docker.io
     )
 
-    # Podman is not available in buster.
+    local -a packages
+    packages_norecomends=()
+
     if [[ "${release}" != "buster" ]]; then
+      # Podman is not available in buster.
       packages+=(podman)
+
+      # Installing VLC on buster fails for unclear reasons
+      # and we're about to drop support
+      packages_norecomends+=(vlc)
     fi
 
     # for testing Visual Studio Code.
@@ -63,6 +70,8 @@ EOF
 
     apt-get -o Acquire::Retries=3 -q update
     eatmydata apt-get -o Acquire::Retries=3 -q -y install "${packages[@]}"
+    eatmydata apt-get -o Acquire::Retries=3 -q -y --no-install-recommends \
+      install "${packages_norecomends[@]}"
 
     apt-get clean
     rm -rf /var/lib/apt/lists
