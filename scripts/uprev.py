@@ -38,7 +38,7 @@ def main():
         ['repo', 'list', '-pf', 'chromiumos/platform/tast-tests']
     ).decode().strip()
     data_dir = os.path.join(tast_tests,
-                            'src/chromiumos/tast/local/crostini/data')
+                            'src/go.chromium.org/tast-tests/cros/local/crostini/data')
 
     images = json.loads(urllib.request.urlopen(
         f'https://storage.googleapis.com/{BUCKET_NAME}/{milestone}/streams/v1/images.json'
