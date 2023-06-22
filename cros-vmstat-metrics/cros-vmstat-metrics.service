@@ -1,8 +1,12 @@
 [Unit]
 Description=Chromium OS /proc/vmstat Metrics Collection Daemon
+After=cros-garcon.service
 
 [Service]
 Type=simple
 ExecStart=/opt/google/cros-containers/bin/crostini_metric_reporter
 ExecStopPost=/opt/google/cros-containers/bin/guest_service_failure_notifier cros-vmstat-metrics
-Restart=on-failure
+Restart=always
+
+[Install]
+WantedBy=default.target

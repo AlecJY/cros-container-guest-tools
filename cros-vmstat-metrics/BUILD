@@ -10,6 +10,7 @@ pkg_tar(
     mode = "0644",
     package_dir = "/usr/lib/systemd/user",
     strip_prefix = "/cros-vmstat-metrics",
+    symlinks = {"./usr/lib/systemd/user/default.target.wants/cros-vmstat-metrics.service": "/usr/lib/systemd/user/cros-vmstat-metrics.service"},
 )
 
 pkg_tar(
@@ -28,7 +29,7 @@ pkg_deb(
     homepage = "https://chromium.googlesource.com/chromiumos/docs/+/HEAD/containers_and_vms.md",
     maintainer = "The Chromium OS Authors <chromium-os-dev@chromium.org>",
     package = "cros-vmstat-metrics",
-    version = "0.1",
     section = "misc",
+    version = "0.2",
     visibility = ["//cros-debs:__pkg__"],
 )

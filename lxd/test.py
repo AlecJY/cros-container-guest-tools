@@ -133,6 +133,11 @@ class LxdTestCase(unittest.TestCase):
     ])
     self.assertEqual(ret, 0)
     ret, _, _ = self.container.execute([
+        'su', '-c', 'systemctl --user is-active cros-vmstat-metrics.service',
+        self.TEST_USER
+    ])
+    self.assertEqual(ret, 0)
+    ret, _, _ = self.container.execute([
         'su', '-c', 'systemctl --user is-active sommelier@0.service',
         self.TEST_USER
     ])
@@ -190,6 +195,11 @@ class LxdTestCase(unittest.TestCase):
         'su', '-c', 'systemctl --user is-active cros-garcon.service',
         self.TEST_USER
     ])
+    ret, _, _ = self.container.execute([
+        'su', '-c', 'systemctl --user is-active cros-vmstat-metrics.service',
+        self.TEST_USER
+    ])
+    self.assertEqual(ret, 0)
     self.assertEqual(ret, 0)
     ret, _, _ = self.container.execute([
         'su', '-c', 'systemctl --user is-active sommelier@0.service',

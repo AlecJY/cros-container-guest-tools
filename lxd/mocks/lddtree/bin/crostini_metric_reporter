@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Copyright 2023 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""A mock implementation of crostini_metric_reporter.
+
+This mock for crostini_metric_reporter will loop forever, unless invoked with
+`test_single_run` option.
+"""
+
+import argparse
+import time
+
+def main():
+  parser = argparse.ArgumentParser(description='crostini_metric_reporter')
+  parser.add_argument("--test_single_run", action="store_true")
+
+  args = parser.parse_args()
+
+  if args.test_single_run:
+    time.sleep(5)
+  else:
+    while True:
+      time.sleep(100)
+
+if __name__ == "__main__":
+  main()
