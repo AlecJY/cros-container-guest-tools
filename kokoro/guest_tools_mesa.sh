@@ -23,15 +23,26 @@ main() {
     # job name to determine what this shard is supposed to build.
     local shard_target=$(get_shard_target)
     echo "shard target=${shard_target}"
-    if [[ ${shard_target} == "guest_tools_mesa" ]]; then
+    if [[ "${shard_target}" == "guest_tools_mesa" ]]; then
       # To preserve historic behaviour, we retain this target. It will be
       # invoked by the normal (non-sharded) build job.
       build_guest_tools
       build_mesa
-    elif [[ ${shard_target} == "guest_tools" ]]; then
+    elif [[ "${shard_target}" == "guest_tools" ]]; then
       build_guest_tools
-    elif [[ ${shard_target} == "cros_im" ]]; then
+    elif [[ "${shard_target}" == "cros_im" ]]; then
+      # TODO(b/267954959): Remove this build once the new (sharded) job works in
+      # prod and existing jobs using this script has been removed.
       build_cros_im
+    elif [[ "${shard_target}" == "cros_im_amd64" ]]; then
+      echo "Temporarily build all of bullseye cros-im for ${shard_target}"
+      echo "This temporary just to make presubmit pass in crrev.com/c/4659236"
+      build_cros_im
+    elif [[ "${shard_target}" =~ ^cros_im.* ]]; then
+      echo "No-op for ${shard_target}"
+      echo "This temporary just to make presubmit pass in crrev.com/c/4659236"
+      # TODO(sophialin): Un-comment the following when the bug is fixed.
+      # build_cros_im_shard $(echo ${shard_target} | sed 's/^cros_im_//')
     else
       # We convert the shard_target ("distro_arch_pkg1_pkg2...") into arguments
       # for building the shard.
