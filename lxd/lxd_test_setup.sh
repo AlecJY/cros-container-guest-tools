@@ -16,6 +16,8 @@ main() {
 
     local -a packages
     packages=(
+        # For crostini.BackupRestore
+        acl
         # For crostini.AudioBasic.
         alsa-utils
         pulseaudio-utils
