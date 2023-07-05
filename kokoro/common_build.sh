@@ -94,3 +94,34 @@ build_cros_im() {
     # Copy resulting debs to results directory.
     cp -r *_cros_im_debs "${result_dir}"
 }
+
+# Builds the Crostini IME Debian package for a single architecture, for both
+# bookworm and bullseye.
+build_cros_im_shard() {
+    [[ $# -eq 1 ]]
+    local arch="$1"
+    local src_root="${KOKORO_ARTIFACTS_DIR}"/git/platform2/vm_tools/cros_im
+    cd "${src_root}"
+
+    local releases="bullseye bookworm"
+    # pbuilder may not be installed yet, so create both directories.
+    sudo mkdir -p /tmpfs/pbuilder /var/cache/pbuilder
+    sudo mount --bind /tmpfs/pbuilder /var/cache/pbuilder
+
+    for dist in ${releases}; do
+        local cache_url="gs://pbuilder-apt-cache/debian-${dist}-${arch}"
+        local cache_dir="/var/cache/pbuilder/debian-${dist}-${arch}/aptcache"
+        sudo mkdir -p "${cache_dir}"
+
+        sudo gsutil -m -q rsync "${cache_dir}" "${cache_url}"
+
+        sudo ./build-packages "${dist}" "${arch}"
+
+        sudo gsutil -m -q rsync "${cache_dir}" "${cache_url}"
+    done
+
+    # Copy resulting debs to results directory.
+    local result_dir="${src_root}"/cros_im_debs
+    mkdir -p "${result_dir}"
+    cp -r *_cros_im_debs "${result_dir}"
+}
