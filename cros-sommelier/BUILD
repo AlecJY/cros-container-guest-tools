@@ -88,6 +88,6 @@ pkg_deb(
         "xxd",
     ],
     section = "misc",
-    version = "0.35",
+    version = "0.34",
     visibility = ["//cros-debs:__pkg__"],
 )
