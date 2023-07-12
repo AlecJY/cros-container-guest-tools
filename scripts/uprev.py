@@ -17,10 +17,14 @@ ARCHES = ['amd64', 'arm64']
 CONTAINER_TYPES = ['test', 'app_test']
 RELEASES = ['buster', 'bullseye']
 PROJECTS = [
-    ('chromiumos/platform/tast-tests',
-     'src/go.chromium.org/tast-tests/cros/local/crostini/data'),
-    ('chromeos/platform/tast-tests-private',
-     'src/go.chromium.org/tast-tests-private/crosint/local/crostini/data'),
+    (
+        'chromiumos/platform/tast-tests',
+        'src/go.chromium.org/tast-tests/cros/local/crostini/data',
+    ),
+    (
+        'chromeos/platform/tast-tests-private',
+        'src/go.chromium.org/tast-tests-private/crosint/local/crostini/data',
+    ),
 ]
 COMMIT_MSG = '''Uprev crostini data dependencies
 
@@ -37,15 +41,21 @@ def update_data_file(url, filepath, size, sha256sum):
         json.dump(result, f, indent=4, sort_keys=True)
         f.write('\n')
 
-def update_project(project, path, images, base_url):
+
+def update_project(project, path, images, base_url, branch):
     print(f'Updating {project}...')
-    project = subprocess.check_output(
-        ['repo', 'list', '-pf', project]
-    ).decode().strip()
-    data_dir = os.path.join(project, path)
+    project_path = (
+        subprocess.run(
+            ['repo', 'list', '-pf', project], check=True, stdout=subprocess.PIPE
+        )
+        .stdout.decode()
+        .strip()
+    )
+    data_dir = os.path.join(project_path, path)
 
     for arch, ctype, release in itertools.product(
-        ARCHES, CONTAINER_TYPES, RELEASES):
+        ARCHES, CONTAINER_TYPES, RELEASES
+    ):
         # The container URLs use 'arm64', but the tast data files use 'arm'
         if arch == 'arm64':
             file_arch = 'arm'
@@ -57,8 +67,7 @@ def update_project(project, path, images, base_url):
         items = product['versions'][latest_container]['items']
 
         metadata_item = items['lxd.tar.xz']
-        metadata_file = (f'crostini_{ctype}_container_metadata_'
-            + f'{release}_{file_arch}.tar.xz.external')
+        metadata_file = f'crostini_{ctype}_container_metadata_{release}_{file_arch}.tar.xz.external'
         update_data_file(
             base_url + metadata_item['path'],
             os.path.join(data_dir, metadata_file),
@@ -67,8 +76,7 @@ def update_project(project, path, images, base_url):
         )
 
         rootfs_item = items['rootfs.squashfs']
-        rootfs_file = (f'crostini_{ctype}_container_rootfs_'
-            + f'{release}_{file_arch}.squashfs.external')
+        rootfs_file = f'crostini_{ctype}_container_rootfs_{release}_{file_arch}.squashfs.external'
         update_data_file(
             base_url + rootfs_item['path'],
             os.path.join(data_dir, rootfs_file),
@@ -76,41 +84,50 @@ def update_project(project, path, images, base_url):
             rootfs_item['sha256'],
         )
 
-    print(f'Committing changes for {project}')
-    subprocess.call(
-        ['git', 'add', path], cwd=project, check=True
-    )
-    subprocess.call(
-        ['git', 'commit', '-m', COMMIT_MSG], cwd=project, check=True
-    )
+    if branch:
+        print(f'Committing changes for {project}')
+        subprocess.run(['git', 'add', path], cwd=project_path, check=True)
+        subprocess.run(
+            ['git', 'commit', '-m', COMMIT_MSG], cwd=project_path, check=True
+        )
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        'milestone', help='milestone number, e.g. 78')
+        '--branch',
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help='create a branch and commit changes',
+    )
+    parser.add_argument('milestone', help='milestone number, e.g. 78')
     args = parser.parse_args()
     milestone = args.milestone
 
     with urllib.request.urlopen(
-        f'https://storage.googleapis.com/{BUCKET_NAME}'
-        + f'/{milestone}/streams/v1/images.json'
+        f'https://storage.googleapis.com/{BUCKET_NAME}/{milestone}/streams/v1/images.json'
     ) as url:
         images = json.loads(url.read())
 
     base_url = f'gs://{BUCKET_NAME}/{milestone}/'
 
-    subprocess.check_call(
-        ['repo', 'start', '--verbose', f'crostini-uprev-{milestone}']
-        + [project for project, path in PROJECTS]
-    )
+    if args.branch:
+        subprocess.run(
+            ['repo', 'start', '--verbose', f'crostini-uprev-{milestone}']
+            + [project for project, _ in PROJECTS],
+            check=True,
+        )
 
     for project, path in PROJECTS:
-        update_project(project, path, images, base_url)
+        update_project(project, path, images, base_url, args.branch)
 
     print('Tast data dependencies updated')
-    print('Now upload these changes with '
-        + f'"repo upload -b crostini-uprev-{milestone}"')
+    if args.branch:
+        print(
+            'Now upload these changes with '
+            + f'"repo upload -b crostini-uprev-{milestone}"'
+        )
+
 
 if __name__ == '__main__':
     main()
