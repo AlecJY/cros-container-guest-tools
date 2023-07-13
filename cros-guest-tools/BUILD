@@ -51,18 +51,16 @@ pkg_deb(
     name = "deb-bookworm",
     architecture = "all",
     data = ":debian-data",
-    depends = DEPENDS,
+    depends = DEPENDS + ["cros-im"],
     description_file = "deb-description",
     homepage = "https://chromium.googlesource.com/chromiumos/containers/cros-container-guest-tools/",
     maintainer = "The ChromiumOS Authors <chromium-os-dev@chromium.org>",
     package = "cros-guest-tools",
-    # TODO(b/267954959): cros-im is not yet packaged for bookworm.
     recommends = RECOMMENDS + [
         "cros-pipe-config",
-        "cros-im",
     ],
     section = "misc",
-    version = "0.38",
+    version = "0.39",
     visibility = ["//cros-debs:__pkg__"],
 )
 
@@ -79,7 +77,7 @@ pkg_deb(
     section = "misc",
     # To maintain a clean upgrade path, the version should sort before the
     # :deb-bookworm versions.
-    version = "0.38~cros11",
+    version = "0.39~cros11",
     visibility = ["//cros-debs:__pkg__"],
 )
 
@@ -96,6 +94,6 @@ pkg_deb(
     section = "misc",
     # To maintain a clean upgrade path, the version should sort before the
     # :deb-bookworm and :deb-bullseye versions.
-    version = "0.38~cros10",
+    version = "0.39~cros10",
     visibility = ["//cros-debs:__pkg__"],
 )
