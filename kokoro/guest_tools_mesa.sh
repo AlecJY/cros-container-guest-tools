@@ -30,10 +30,6 @@ main() {
       build_mesa
     elif [[ "${shard_target}" == "guest_tools" ]]; then
       build_guest_tools
-    elif [[ "${shard_target}" == "cros_im" ]]; then
-      # TODO(b/267954959): Remove this build once the new (sharded) job works in
-      # prod and existing jobs using this script has been removed.
-      build_cros_im
     elif [[ "${shard_target}" =~ ^cros_im.* ]]; then
       build_cros_im_shard $(echo ${shard_target} | sed 's/^cros_im_//')
     else

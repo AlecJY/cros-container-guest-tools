@@ -63,38 +63,6 @@ build_mesa_shard() {
     popd > /dev/null
 }
 
-# Builds the Crostini IME Debian package for all supported architectures.
-build_cros_im() {
-    local src_root="${KOKORO_ARTIFACTS_DIR}"/git/platform2/vm_tools/cros_im
-    local result_dir="${src_root}"/cros_im_debs
-    mkdir -p "${result_dir}"
-    cd "${src_root}"
-
-    # Use qemu-user-static 1:6.2 since the version in Ubuntu 20.04 has a bug
-    # that has not yet been patched (b/244998899).
-    sudo dpkg -i "${KOKORO_GFILE_DIR}"/qemu-user-static_ubuntu6.2_amd64.deb
-
-    # pbuilder may not be installed yet, so create both directories.
-    sudo mkdir -p /tmpfs/pbuilder /var/cache/pbuilder
-    sudo mount --bind /tmpfs/pbuilder /var/cache/pbuilder
-
-    # This job builds multiple architectures of bullseye. Download caches for
-    # all these arches.
-    local cache_url="gs://pbuilder-apt-cache"
-    local cache_dir="/var/cache/pbuilder/aptcache"
-    sudo mkdir -p "${cache_dir}"
-    sudo gsutil -m -q rsync -r -x 'debian-(?!bullseye).*$' "${cache_url}" \
-        "${cache_dir}"
-
-    sudo ./build-packages
-
-    sudo gsutil -m -q rsync -r -x 'debian-(?!bullseye).*$' "${cache_dir}" \
-        "${cache_url}"
-
-    # Copy resulting debs to results directory.
-    cp -r *_cros_im_debs "${result_dir}"
-}
-
 # Builds the Crostini IME Debian package for a single architecture, for both
 # bookworm and bullseye.
 build_cros_im_shard() {
