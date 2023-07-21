@@ -55,7 +55,8 @@ def can_hardlink(src_path, target_path):
          src_stat.st_gid == target_stat.st_gid
 
 def dedupe_hardlinks(target_dir):
-  dupes = subprocess.check_output(['fdupes', '--recursive', str(target_dir)]).decode('utf-8')
+  # -r is --recursive for some versions and --recurse on more recent versions.
+  dupes = subprocess.check_output(['fdupes', '-r', str(target_dir)]).decode('utf-8')
 
   src_file = ''
   for line in dupes.splitlines():
