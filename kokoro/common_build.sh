@@ -35,7 +35,7 @@ build_mesa_shard() {
     mkdir -p "${buildresult}"
 
     if [[ "${arch}" = "arm"* && "$(uname -m)" != "aarch64" ]]; then
-         sudo dpkg -i "${KOKORO_GFILE_DIR}/qemu-user-static_ubuntu6.2_amd64.deb"
+        sudo dpkg -i "${KOKORO_GFILE_DIR}/qemu-user-static_ubuntu6.2_amd64.deb"
     fi
 
     sudo mkdir /tmpfs/pbuilder
@@ -77,6 +77,13 @@ build_cros_im_shard() {
     sudo mount --bind /tmpfs/pbuilder /var/cache/pbuilder
 
     for dist in ${releases}; do
+        if [[ "${dist}" == "bookworm" ]]; then
+            # The debian-archive-keyring in Ubuntu 20.04 is too old, install a
+            # newer version for bookworm keys.
+            sudo dpkg -i \
+              "${KOKORO_GFILE_DIR}/debian-archive-keyring_2023.3ubuntu1_all.deb"
+        fi
+
         local cache_url="gs://pbuilder-apt-cache/debian-${dist}-${arch}"
         local cache_dir="/var/cache/pbuilder/debian-${dist}-${arch}/aptcache"
         sudo mkdir -p "${cache_dir}"
