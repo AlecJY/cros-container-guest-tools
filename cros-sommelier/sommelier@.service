@@ -5,8 +5,18 @@ Description=Parent sommelier listening on socket wayland-%i
 Environment="WAYLAND_DISPLAY_VAR=WAYLAND_DISPLAY"
 Environment="SOMMELIER_SCALE=1.0"
 Type=notify
-ExecStartPre=/bin/sh -c \
-                 "/bin/systemctl --user set-environment \
+# TODO(b/294167210): This is a workaround for Bruschetta, remove this
+# when we have a better approach.
+ExecStartPre=/bin/bash -c \
+                 "i=0; \
+                  while [[ ! -f /dev/.container_token ]]; do \
+                    sleep 0.1; \
+                    i=$((i=i+1)); \
+                    if [[ $i == 50 ]]; then \
+                      >&2 echo sommelier: WARNING: still waiting for /dev/.container_token; \
+                    fi \
+                  done; \
+                  /bin/systemctl --user set-environment \
                       SOMMELIER_VM_IDENTIFIER=$(cat /dev/.container_token); \
                   /usr/bin/test -c /dev/dri/renderD128 && \
                       /bin/systemctl --user set-environment \

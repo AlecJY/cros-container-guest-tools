@@ -7,6 +7,7 @@
 import os
 import pylxd
 import sys
+import tempfile
 import time
 import unittest
 import xmlrunner
@@ -51,6 +52,9 @@ class LxdTestCase(unittest.TestCase):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     lddtree_dir = os.path.join(script_dir, 'mocks', 'lddtree')
 
+    cls.container_token_file = tempfile.NamedTemporaryFile()
+    cls.container_token_file.write(b'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
+
     cls.profile = cls.client.profiles.create(
         cls.TEST_PROFILE,
         config={
@@ -73,6 +77,11 @@ class LxdTestCase(unittest.TestCase):
                 'path': '/opt/google/cros-containers',
                 'type': 'disk',
             },
+            'container_token': {
+                'source': cls.container_token_file.name,
+                'path': '/dev/.container_token',
+                'type': 'disk',
+            },
         })
 
   @classmethod
@@ -81,6 +90,7 @@ class LxdTestCase(unittest.TestCase):
     cls.image.delete(wait=True)
     cls.profile.sync()
     cls.profile.delete(wait=True)
+    cls.container_token_file.close()
 
   def setUp(self):
     if self.client.containers.exists(self.CONTAINER_NAME):
@@ -199,7 +209,6 @@ class LxdTestCase(unittest.TestCase):
         'su', '-c', 'systemctl --user is-active cros-vmstat-metrics.service',
         self.TEST_USER
     ])
-    self.assertEqual(ret, 0)
     self.assertEqual(ret, 0)
     ret, _, _ = self.container.execute([
         'su', '-c', 'systemctl --user is-active sommelier@0.service',

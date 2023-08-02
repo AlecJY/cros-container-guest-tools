@@ -73,8 +73,10 @@ pkg_deb(
     conffiles_file = "conffiles",
     data = ":debian-data",
     depends = [
+        "bash",
         "libpam-systemd",
         "x11-utils",
+        "xxd",
     ],
     description_file = "deb-description",
     homepage = "https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/vm_tools/sommelier/",
@@ -85,9 +87,8 @@ pkg_deb(
         "xauth",
         "xfonts-base",
         "xkb-data",
-        "xxd",
     ],
     section = "misc",
-    version = "0.35",
+    version = "0.36",
     visibility = ["//cros-debs:__pkg__"],
 )
