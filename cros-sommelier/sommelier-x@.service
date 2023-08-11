@@ -10,14 +10,15 @@ Environment="SOMMELIER_SCALE=1.0"
 # on Debian stretch. This is the value of the --with-default-font-path argument
 # to the configure script.
 # TODO(smbarber): Factor this out for different distros.
-Environment="SOMMELIER_XFONT_PATH=/usr/share/fonts/X11/misc,\
-/usr/share/fonts/X11/cyrillic,\
-/usr/share/fonts/X11/100dpi/:unscaled,\
-/usr/share/fonts/X11/75dpi/:unscaled,\
-/usr/share/fonts/X11/Type1,\
-/usr/share/fonts/X11/100dpi,\
-/usr/share/fonts/X11/75dpi,\
+Environment="SOMMELIER_XFONT_PATH=/usr/share/fonts/misc,\
+/usr/share/fonts/cyrillic,\
+/usr/share/fonts/100dpi/:unscaled,\
+/usr/share/fonts/75dpi/:unscaled,\
+/usr/share/fonts/Type1,\
+/usr/share/fonts/100dpi,\
+/usr/share/fonts/75dpi,\
 built-ins"
+Environment="LIBGL_DRIVERS_PATH=/opt/google/cros-containers/lib/"
 Type=notify
 # TODO(b/294167210): This is a workaround for Bruschetta, remove this
 # when we have a better approach.
