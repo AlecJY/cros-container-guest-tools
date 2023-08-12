@@ -4,7 +4,7 @@ After=cros-garcon.service
 
 [Service]
 Type=simple
-ExecStart=/opt/google/cros-containers/bin/crostini_metric_reporter
+ExecStart=/opt/google/cros-containers/bin/crostini_metric_reporter --run-outside-crostini
 ExecStopPost=/opt/google/cros-containers/bin/guest_service_failure_notifier cros-vmstat-metrics
 Restart=always
 
